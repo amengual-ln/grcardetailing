@@ -1,10 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServiceClient } from '../supabase'
+import { createServiceClient, isConfigured } from '../supabase'
 import { EstadoTurno, TurnoConRelaciones } from '../database.types'
 
 export async function getTurnos(fechaDesde?: string, fechaHasta?: string): Promise<TurnoConRelaciones[]> {
+  if (!isConfigured) return []
   const supabase = createServiceClient()
   let query = supabase
     .from('turnos')
@@ -29,6 +30,7 @@ export async function crearTurno(payload: {
   auto_tamaño: string
   notas?: string
 }) {
+  if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   const { error } = await supabase.from('turnos').insert({
     cliente_id: payload.cliente_id,
@@ -46,6 +48,7 @@ export async function crearTurno(payload: {
 }
 
 export async function actualizarEstado(turnoId: string, estado: EstadoTurno) {
+  if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   const { error } = await supabase
     .from('turnos')
@@ -56,6 +59,7 @@ export async function actualizarEstado(turnoId: string, estado: EstadoTurno) {
 }
 
 export async function eliminarTurno(turnoId: string) {
+  if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   const { error } = await supabase.from('turnos').delete().eq('id', turnoId)
   if (error) throw new Error(error.message)

@@ -1,10 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServiceClient } from '../supabase'
+import { createServiceClient, isConfigured } from '../supabase'
 import { Cliente } from '../database.types'
 
 export async function getClientes(): Promise<Cliente[]> {
+  if (!isConfigured) return []
   const supabase = createServiceClient()
   const { data, error } = await supabase
     .from('clientes')
@@ -15,6 +16,7 @@ export async function getClientes(): Promise<Cliente[]> {
 }
 
 export async function buscarOCrearCliente(nombre: string, telefono: string, email?: string): Promise<Cliente> {
+  if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   if (telefono) {
     const { data: existing } = await supabase
@@ -37,6 +39,7 @@ export async function buscarOCrearCliente(nombre: string, telefono: string, emai
 }
 
 export async function getClienteConHistorial(clienteId: string) {
+  if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   const [clienteRes, turnosRes] = await Promise.all([
     supabase.from('clientes').select('*').eq('id', clienteId).single(),

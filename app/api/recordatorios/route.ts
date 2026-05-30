@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase'
+import { createServiceClient, isConfigured } from '@/lib/supabase'
 import { enviarRecordatorio } from '@/lib/whatsapp'
 import { format, addDays } from 'date-fns'
 
 export async function GET(request: Request) {
+  if (!isConfigured) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+  }
+
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
