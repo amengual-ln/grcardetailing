@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+:root {
+  --red: #A32D2D;
+  --red-light: #FCEBEB;
+  --red-mid: #E24B4A;
+  --red-dark: #501313;
+
+  --bg: #f5f4f1;
+  --bg-card: #ffffff;
+  --bg-hover: #f3f4f6;
+  --bg-active: #e5e7eb;
+  --text: #1a1a1a;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --shadow: rgba(0,0,0,0.08);
+
+  --success-bg: #f0fdf4;
+  --success-text: #166534;
+  --success-border: #bbf7d0;
+  --warning-bg: #fffbeb;
+  --warning-text: #92400e;
+  --warning-border: #fde68a;
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --danger-border: #fecaca;
+  --muted-bg: #f3f4f6;
+  --muted-text: #6b7280;
+  --muted-border: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111113;
+    --bg-card: #1a1a1c;
+    --bg-hover: #272729;
+    --bg-active: #333335;
+    --text: #f0f0f0;
+    --text-muted: #a1a1aa;
+    --text-subtle: #71717a;
+    --border: #2e2e31;
+    --border-strong: #404043;
+    --shadow: rgba(0,0,0,0.3);
+
+    --success-bg: #052e16;
+    --success-text: #86efac;
+    --success-border: #166534;
+    --warning-bg: #1c1507;
+    --warning-text: #fde047;
+    --warning-border: #713f12;
+    --danger-bg: #1c0808;
+    --danger-text: #fca5a5;
+    --danger-border: #7f1d1d;
+    --muted-bg: #27272a;
+    --muted-text: #a1a1aa;
+    --muted-border: #3f3f46;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-geist), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  background: var(--bg-card);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.input:focus { border-color: var(--red); background: var(--bg-card); }
+.input::placeholder { color: var(--text-subtle); }
