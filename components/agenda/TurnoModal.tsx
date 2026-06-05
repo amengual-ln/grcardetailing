@@ -20,7 +20,7 @@ interface Props {
 export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved }: Props) {
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
-    clienteNombre: '', clienteTel: '', clienteEmail: '',
+    clienteNombre: '', clienteTel: '',
     auto: '', tamaño: TAMAÑOS_AUTO[1],
     servicioId: servicios[0]?.id || '',
     fecha: defaultFecha, hora: '09:00', notas: '',
@@ -34,7 +34,7 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
     if (!form.clienteNombre || !form.auto || !form.fecha || !form.hora || !form.servicioId) return
     setLoading(true)
     try {
-      const cliente = await buscarOCrearCliente(form.clienteNombre, form.clienteTel, form.clienteEmail || undefined)
+      const cliente = await buscarOCrearCliente(form.clienteNombre, form.clienteTel)
       await crearTurno({
         cliente_id: cliente.id,
         servicio_id: form.servicioId,
@@ -69,15 +69,9 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
           <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Cliente</label>
           <input className="input" placeholder="Nombre y apellido" value={form.clienteNombre} onChange={set('clienteNombre')} />
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Teléfono</label>
-            <input className="input" type="tel" placeholder="+54 9 11..." value={form.clienteTel} onChange={set('clienteTel')} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Email (opcional)</label>
-            <input className="input" type="email" placeholder="email@..." value={form.clienteEmail} onChange={set('clienteEmail')} />
-          </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Teléfono</label>
+          <input className="input" type="tel" placeholder="+54 9 11..." value={form.clienteTel} onChange={set('clienteTel')} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">

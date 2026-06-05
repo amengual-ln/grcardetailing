@@ -48,6 +48,17 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['turnos']['Row'], 'id' | 'created_at'>
         Update: Partial<Database['public']['Tables']['turnos']['Insert']>
       }
+      vehiculos: {
+        Row: {
+          id: string
+          created_at: string
+          cliente_id: string
+          nombre: string
+          tamaño: TamañoAuto
+        }
+        Insert: Omit<Database['public']['Tables']['vehiculos']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['vehiculos']['Insert']>
+      }
     }
   }
 }
@@ -56,7 +67,11 @@ export interface Database {
 export type Cliente = Database['public']['Tables']['clientes']['Row']
 export type Servicio = Database['public']['Tables']['servicios']['Row']
 export type Turno = Database['public']['Tables']['turnos']['Row']
+export type Vehiculo = Database['public']['Tables']['vehiculos']['Row']
 export type TurnoConRelaciones = Turno & {
   clientes: Cliente
   servicios: Servicio
+}
+export type ClienteConVehiculos = Cliente & {
+  vehiculos: Vehiculo[]
 }
