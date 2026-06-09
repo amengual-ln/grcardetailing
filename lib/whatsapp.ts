@@ -60,5 +60,5 @@ Te recuerdo que mañana tenés turno en *GR Car Detailing*:
 
 Si necesitás reprogramar, avisame con anticipación.
 
-¡Gracias! — Gonzalo / GR Car Detailing 🚗`
+¡Gracias! GR Car Detailing 🚗`
 }
