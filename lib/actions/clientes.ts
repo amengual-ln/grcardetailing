@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServiceClient, isConfigured } from '../supabase'
-import { Cliente } from '../database.types'
+import { Cliente, Auto } from '../database.types'
 
 export async function getClientes(): Promise<Cliente[]> {
   if (!isConfigured) return []
@@ -13,6 +13,35 @@ export async function getClientes(): Promise<Cliente[]> {
     .order('nombre')
   if (error) throw new Error(error.message)
   return (data || []) as Cliente[]
+}
+
+export async function getAutosPorCliente(clienteId: string): Promise<Auto[]> {
+  if (!isConfigured) return []
+  const supabase = createServiceClient()
+  const { data, error } = await supabase
+    .from('autos')
+    .select('*')
+    .eq('cliente_id', clienteId)
+    .order('created_at', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data || []) as Auto[]
+}
+
+export async function crearAuto(clienteId: string, modelo: string, tamaño: string, patente?: string): Promise<Auto> {
+  if (!isConfigured) throw new Error('Database not configured')
+  const supabase = createServiceClient()
+  const { data, error } = await supabase
+    .from('autos')
+    .insert({
+      cliente_id: clienteId,
+      modelo,
+      tamaño: tamaño as any,
+      patente: patente || null,
+    })
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return data as Auto
 }
 
 export async function buscarOCrearCliente(nombre: string, telefono: string, email?: string): Promise<Cliente> {
