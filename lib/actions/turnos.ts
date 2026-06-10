@@ -110,7 +110,9 @@ export async function crearTurno(payload: {
     const serviciosMap: Record<string, number> = {}
     for (const row of servicioRows || []) {
       if (!serviciosMap[row.turno_id]) serviciosMap[row.turno_id] = 0
-      if (row.servicios) serviciosMap[row.turno_id] += row.servicios.duracion_minutos
+      if (row.servicios && Array.isArray(row.servicios)) {
+        serviciosMap[row.turno_id] += row.servicios.reduce((acc: number, s: any) => acc + s.duracion_minutos, 0)
+      }
     }
 
     for (const turno of turnosExistentes) {

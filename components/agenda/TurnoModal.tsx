@@ -26,7 +26,7 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
     clienteExistenteId: '',
     clienteNombre: '', clienteTel: '', clienteEmail: '',
     autoId: '',
-    auto: '', tamaño: TAMAÑOS_AUTO[1], patente: '',
+    auto: '', tamaño: TAMAÑOS_AUTO[1] as (typeof TAMAÑOS_AUTO)[number], patente: '',
     servicioIds: [] as string[],
     fecha: defaultFecha, hora: '09:00', notas: '',
   })
@@ -78,11 +78,11 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
               ...f,
               autoId: autos[0].id,
               auto: autos[0].modelo,
-              tamaño: autos[0].tamaño,
+              tamaño: autos[0].tamaño as (typeof TAMAÑOS_AUTO)[number],
               patente: autos[0].patente || '',
             }))
           } else {
-            setForm(f => ({ ...f, autoId: '', auto: '', tamaño: TAMAÑOS_AUTO[1], patente: '' }))
+            setForm(f => ({ ...f, autoId: '', auto: '', tamaño: TAMAÑOS_AUTO[1] as (typeof TAMAÑOS_AUTO)[number], patente: '' }))
           }
         })
         .catch(console.error)
@@ -229,13 +229,13 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
               <select className="input" value={form.autoId} onChange={e => {
                 const auto = autosCliente.find(a => a.id === e.target.value)
                 if (e.target.value === '__nuevo__') {
-                  setForm(f => ({ ...f, autoId: '__nuevo__', auto: '', tamaño: TAMAÑOS_AUTO[1], patente: '' }))
+                  setForm(f => ({ ...f, autoId: '__nuevo__', auto: '', tamaño: TAMAÑOS_AUTO[1] as (typeof TAMAÑOS_AUTO)[number], patente: '' }))
                 } else {
                   setForm(f => ({
                     ...f,
                     autoId: e.target.value,
                     auto: auto?.modelo || '',
-                    tamaño: auto?.tamaño || TAMAÑOS_AUTO[1],
+                    tamaño: (auto?.tamaño as (typeof TAMAÑOS_AUTO)[number]) || TAMAÑOS_AUTO[1],
                     patente: auto?.patente || '',
                   }))
                 }
