@@ -57,7 +57,7 @@ export default async function ClientesPage() {
                 {c.ultimoTurno && (
                   <div className="text-right shrink-0 hidden lg:block min-w-[80px]">
                     <div className="text-[11px] text-[var(--text-muted)]">Último turno</div>
-                    <div className="text-xs text-[var(--text-muted)] truncate">{c.ultimoTurno.servicios?.nombre}</div>
+                    <div className="text-xs text-[var(--text-muted)] truncate">{c.ultimoTurno.servicios?.[0]?.nombre || '—'}</div>
                   </div>
                 )}
               </div>

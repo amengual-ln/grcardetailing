@@ -32,7 +32,6 @@ create table if not exists turnos (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz default now(),
   cliente_id uuid not null references clientes(id) on delete cascade,
-  servicio_id uuid not null references servicios(id),
   fecha date not null,
   hora time not null,
   estado estado_turno not null default 'pendiente',
@@ -40,6 +39,14 @@ create table if not exists turnos (
   auto_tamaño tamaño_auto not null default 'Mediano',
   notas text,
   recordatorio_enviado boolean not null default false
+);
+
+-- Turno-Servicios (relación muchos a muchos)
+create table if not exists turno_servicios (
+  id uuid primary key default gen_random_uuid(),
+  turno_id uuid not null references turnos(id) on delete cascade,
+  servicio_id uuid not null references servicios(id) on delete cascade,
+  unique(turno_id, servicio_id)
 );
 
 -- Índices
