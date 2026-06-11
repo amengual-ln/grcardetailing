@@ -7,7 +7,7 @@ export async function GET() {
     clienteTelefono: process.env.TWILIO_TEST_PHONE || 'whatsapp:+5491112345678',
     fecha: '09/06/2026',
     hora: '15:00',
-    servicio: 'Prueba de conexión Twilio',
+    servicios: ['Prueba de conexión Twilio'],
   })
 
   return NextResponse.json({
