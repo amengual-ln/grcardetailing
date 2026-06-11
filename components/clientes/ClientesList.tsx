@@ -2,14 +2,15 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Users, Search, Plus, Pencil } from 'lucide-react'
+import { Users, Search, Plus, Pencil, FileText, MessageCircle, Calendar } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { ClienteModal } from './ClienteModal'
-import { ClienteConVehiculos, TurnoConRelaciones } from '@/lib/database.types'
+import { HistorialTurnos } from './HistorialTurnos'
+import { ClienteConAutos, TurnoConRelaciones } from '@/lib/database.types'
 
 interface Props {
-  initialClientes: ClienteConVehiculos[]
+  initialClientes: ClienteConAutos[]
   turnos: TurnoConRelaciones[]
 }
 
@@ -18,13 +19,14 @@ export function ClientesList({ initialClientes, turnos }: Props) {
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [historialClienteId, setHistorialClienteId] = useState<string | null>(null)
 
   const clientesConStats = useMemo(() => {
     return initialClientes.map(c => {
       const clienteTurnos = turnos.filter(t => t.cliente_id === c.id)
       const ultimo = [...clienteTurnos].sort((a, b) => b.fecha.localeCompare(a.fecha))[0] as TurnoConRelaciones | undefined
       return { ...c, totalTurnos: clienteTurnos.length, ultimoTurno: ultimo }
-    }).sort((a, b) => b.totalTurnos - a.totalTurnos)
+    }).sort((a, b) => a.nombre.localeCompare(b.nombre))
   }, [initialClientes, turnos])
 
   const filtered = useMemo(() => {
@@ -58,7 +60,8 @@ export function ClientesList({ initialClientes, turnos }: Props) {
         <div className="relative">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
-            className="input pl-8"
+            className="input"
+            style={{ paddingLeft: '2.5rem' }}
             placeholder="Buscar por nombre o teléfono..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -82,15 +85,21 @@ export function ClientesList({ initialClientes, turnos }: Props) {
                 key={c.id}
                 className="flex items-center gap-3 px-4 py-3 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] hover:border-[var(--border-strong)] transition-all"
               >
-                <Avatar nombre={c.nombre} />
+                <Avatar />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">{c.nombre}</div>
                   <div className="text-xs text-[var(--text-muted)] truncate">
                     {c.telefono}{c.email ? ` · ${c.email}` : ''}
                   </div>
-                  {c.vehiculos.length > 0 && (
+                  {c.autos.length > 0 && (
                     <div className="text-[11px] text-[var(--text-muted)] mt-0.5 truncate">
-                      {c.vehiculos.map(v => v.nombre).join(', ')}
+                      {c.autos.map(v => v.modelo).join(', ')}
+                    </div>
+                  )}
+                  {c.notas && (
+                    <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] mt-0.5">
+                      <FileText size={11} />
+                      <span className="truncate">{c.notas}</span>
                     </div>
                   )}
                 </div>
@@ -104,6 +113,22 @@ export function ClientesList({ initialClientes, turnos }: Props) {
                     <div className="text-xs text-[var(--text-muted)] truncate">{c.ultimoTurno.servicios?.nombre}</div>
                   </div>
                 )}
+                <button
+                  onClick={() => setHistorialClienteId(c.id)}
+                  className="shrink-0 p-1.5 text-[var(--text-muted)] hover:text-[var(--red)] hover:bg-[var(--bg-hover)] rounded-lg transition-all cursor-pointer"
+                  title="Ver historial de turnos"
+                >
+                  <Calendar size={14} />
+                </button>
+                <a
+                  href={`https://wa.me/${c.telefono.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 p-1.5 text-[var(--text-muted)] hover:text-green-500 hover:bg-[var(--bg-hover)] rounded-lg transition-all cursor-pointer"
+                  title="Enviar WhatsApp"
+                >
+                  <MessageCircle size={14} />
+                </a>
                 <button
                   onClick={() => setEditingId(c.id)}
                   className="shrink-0 p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)] rounded-lg transition-all cursor-pointer"
@@ -127,6 +152,17 @@ export function ClientesList({ initialClientes, turnos }: Props) {
           onSaved={handleSaved}
         />
       )}
+      {historialClienteId && (() => {
+        const c = clientesConStats.find(x => x.id === historialClienteId)
+        if (!c) return null
+        return (
+          <HistorialTurnos
+            cliente={c}
+            turnos={turnos.filter(t => t.cliente_id === c.id)}
+            onClose={() => setHistorialClienteId(null)}
+          />
+        )
+      })()}
     </>
   )
 }

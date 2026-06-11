@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServiceClient, isConfigured } from '../supabase'
-import { Cliente, ClienteConVehiculos, TamañoAuto } from '../database.types'
+import { Cliente, ClienteConAutos, TamañoAuto } from '../database.types'
 
 export async function getClientes(): Promise<Cliente[]> {
   if (!isConfigured) return []
@@ -49,37 +49,37 @@ export async function getClienteConHistorial(clienteId: string) {
   return { cliente: clienteRes.data as Cliente, turnos: turnosRes.data || [] }
 }
 
-export async function getClientesConVehiculos(): Promise<ClienteConVehiculos[]> {
+export async function getClientesConAutos(): Promise<ClienteConAutos[]> {
   if (!isConfigured) return []
   const supabase = createServiceClient()
   const { data: clientes, error } = await supabase
     .from('clientes')
-    .select('*, vehiculos(*)')
+    .select('*, autos(*)')
     .order('nombre')
   if (error) throw new Error(error.message)
-  return (clientes || []) as unknown as ClienteConVehiculos[]
+  return (clientes || []) as unknown as ClienteConAutos[]
 }
 
-export async function getClienteConVehiculos(id: string): Promise<ClienteConVehiculos | null> {
+export async function getClienteConAutos(id: string): Promise<ClienteConAutos | null> {
   if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
   const { data, error } = await supabase
     .from('clientes')
-    .select('*, vehiculos(*)')
+    .select('*, autos(*)')
     .eq('id', id)
     .single()
   if (error) throw new Error(error.message)
-  return data as unknown as ClienteConVehiculos
+  return data as unknown as ClienteConAutos
 }
 
 interface CrearClienteData {
   nombre: string
   telefono: string
   notas?: string
-  vehiculos?: { nombre: string; tamaño: TamañoAuto }[]
+  autos?: { modelo: string; tamaño: TamañoAuto }[]
 }
 
-export async function crearCliente(data: CrearClienteData): Promise<ClienteConVehiculos> {
+export async function crearCliente(data: CrearClienteData): Promise<ClienteConAutos> {
   if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
 
@@ -95,29 +95,30 @@ export async function crearCliente(data: CrearClienteData): Promise<ClienteConVe
 
   if (error) throw new Error(error.message)
 
-  if (data.vehiculos && data.vehiculos.length > 0) {
-    const { error: vehError } = await supabase
-      .from('vehiculos')
-      .insert(data.vehiculos.map(v => ({
+  if (data.autos && data.autos.length > 0) {
+    const { error: insError } = await supabase
+      .from('autos')
+      .insert(data.autos.map(v => ({
         cliente_id: (cliente as Cliente).id,
-        nombre: v.nombre,
+        modelo: v.modelo,
         tamaño: v.tamaño,
+        patente: '',
       })))
-    if (vehError) throw new Error(vehError.message)
+    if (insError) throw new Error(insError.message)
   }
 
   revalidatePath('/clientes')
-  return getClienteConVehiculos((cliente as Cliente).id) as Promise<ClienteConVehiculos>
+  return getClienteConAutos((cliente as Cliente).id) as Promise<ClienteConAutos>
 }
 
 interface ActualizarClienteData {
   nombre: string
   telefono: string
   notas?: string
-  vehiculos?: { nombre: string; tamaño: TamañoAuto }[]
+  autos?: { modelo: string; tamaño: TamañoAuto }[]
 }
 
-export async function actualizarCliente(id: string, data: ActualizarClienteData): Promise<ClienteConVehiculos> {
+export async function actualizarCliente(id: string, data: ActualizarClienteData): Promise<ClienteConAutos> {
   if (!isConfigured) throw new Error('Database not configured')
   const supabase = createServiceClient()
 
@@ -132,27 +133,27 @@ export async function actualizarCliente(id: string, data: ActualizarClienteData)
 
   if (error) throw new Error(error.message)
 
-  // Replace vehicles: delete all, then insert new ones
   const { error: delError } = await supabase
-    .from('vehiculos')
+    .from('autos')
     .delete()
     .eq('cliente_id', id)
 
   if (delError) throw new Error(delError.message)
 
-  if (data.vehiculos && data.vehiculos.length > 0) {
+  if (data.autos && data.autos.length > 0) {
     const { error: insError } = await supabase
-      .from('vehiculos')
-      .insert(data.vehiculos.map(v => ({
+      .from('autos')
+      .insert(data.autos.map(v => ({
         cliente_id: id,
-        nombre: v.nombre,
+        modelo: v.modelo,
         tamaño: v.tamaño,
+        patente: '',
       })))
     if (insError) throw new Error(insError.message)
   }
 
   revalidatePath('/clientes')
-  return getClienteConVehiculos(id) as Promise<ClienteConVehiculos>
+  return getClienteConAutos(id) as Promise<ClienteConAutos>
 }
 
 export async function eliminarCliente(id: string): Promise<void> {

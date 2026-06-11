@@ -1,4 +1,4 @@
-import { getClientesConVehiculos } from '@/lib/actions/clientes'
+import { getClientesConAutos } from '@/lib/actions/clientes'
 import { getTurnos } from '@/lib/actions/turnos'
 import { ClientesList } from '@/components/clientes/ClientesList'
 import { TurnoConRelaciones } from '@/lib/database.types'
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function ClientesPage() {
   const [clientes, turnos] = await Promise.all([
-    getClientesConVehiculos().catch(() => []),
+    getClientesConAutos().catch(() => []),
     getTurnos().catch((): TurnoConRelaciones[] => []),
   ])
 

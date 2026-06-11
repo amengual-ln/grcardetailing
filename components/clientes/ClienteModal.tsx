@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { X, Check, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
-import { crearCliente, actualizarCliente, eliminarCliente, getClienteConVehiculos } from '@/lib/actions/clientes'
-import { ClienteConVehiculos, TamañoAuto } from '@/lib/database.types'
+import { crearCliente, actualizarCliente, eliminarCliente, getClienteConAutos } from '@/lib/actions/clientes'
+import { ClienteConAutos, TamañoAuto } from '@/lib/database.types'
 import { TAMAÑOS_AUTO } from '@/lib/constants'
 
 interface Props {
@@ -13,8 +13,8 @@ interface Props {
   onSaved: () => void
 }
 
-interface VehiculoForm {
-  nombre: string
+interface AutoForm {
+  modelo: string
   tamaño: TamañoAuto
 }
 
@@ -25,33 +25,33 @@ export function ClienteModal({ clienteId, onClose, onSaved }: Props) {
   const [nombre, setNombre] = useState('')
   const [telefono, setTelefono] = useState('')
   const [notas, setNotas] = useState('')
-  const [vehiculos, setVehiculos] = useState<VehiculoForm[]>([])
+  const [autos, setAutos] = useState<AutoForm[]>([])
 
   useEffect(() => {
     if (clienteId) {
-      getClienteConVehiculos(clienteId).then(c => {
+      getClienteConAutos(clienteId).then(c => {
         if (!c) return
         setNombre(c.nombre)
         setTelefono(c.telefono)
         setNotas(c.notas || '')
-        setVehiculos(c.vehiculos.map(v => ({ nombre: v.nombre, tamaño: v.tamaño })))
+        setAutos(c.autos.map(v => ({ modelo: v.modelo, tamaño: v.tamaño as TamañoAuto })))
       })
     }
   }, [clienteId])
 
-  function addVehiculo() {
-    setVehiculos(v => [...v, { nombre: '', tamaño: 'Mediano' }])
+  function addAuto() {
+    setAutos(v => [...v, { modelo: '', tamaño: 'Mediano' }])
   }
 
-  function removeVehiculo(i: number) {
-    setVehiculos(v => v.filter((_, idx) => idx !== i))
+  function removeAuto(i: number) {
+    setAutos(v => v.filter((_, idx) => idx !== i))
   }
 
-  function updateVehiculo(i: number, field: keyof VehiculoForm, value: string) {
-    setVehiculos(v => v.map((veh, idx) =>
+  function updateAuto(i: number, field: keyof AutoForm, value: string) {
+    setAutos(v => v.map((a, idx) =>
       idx === i
-        ? { ...veh, [field]: field === 'tamaño' ? value as TamañoAuto : value }
-        : veh
+        ? { ...a, [field]: field === 'tamaño' ? value as TamañoAuto : value }
+        : a
     ))
   }
 
@@ -59,20 +59,20 @@ export function ClienteModal({ clienteId, onClose, onSaved }: Props) {
     if (!nombre.trim() || !telefono.trim()) return
     setLoading(true)
     try {
-      const vehiculosData = vehiculos.filter(v => v.nombre.trim())
+      const autosData = autos.filter(v => v.modelo.trim())
       if (clienteId) {
         await actualizarCliente(clienteId, {
           nombre: nombre.trim(),
           telefono: telefono.trim(),
           notas: notas.trim() || undefined,
-          vehiculos: vehiculosData.length > 0 ? vehiculosData : undefined,
+          autos: autosData.length > 0 ? autosData : undefined,
         })
       } else {
         await crearCliente({
           nombre: nombre.trim(),
           telefono: telefono.trim(),
           notas: notas.trim() || undefined,
-          vehiculos: vehiculosData.length > 0 ? vehiculosData : undefined,
+          autos: autosData.length > 0 ? autosData : undefined,
         })
       }
       onSaved()
@@ -127,32 +127,32 @@ export function ClienteModal({ clienteId, onClose, onSaved }: Props) {
 
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Vehículos (opcional)</label>
+            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Autos (opcional)</label>
             <button
-              onClick={addVehiculo}
+              onClick={addAuto}
               className="text-xs text-[var(--red)] hover:underline flex items-center gap-1 cursor-pointer"
             >
               <Plus size={12} /> Agregar
             </button>
           </div>
           <div className="flex flex-col gap-2">
-            {vehiculos.map((v, i) => (
+            {autos.map((a, i) => (
               <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-2 items-start">
                 <input
                   className="input w-full"
-                  placeholder="Modelo del vehículo"
-                  value={v.nombre}
-                  onChange={e => updateVehiculo(i, 'nombre', e.target.value)}
+                  placeholder="Modelo del auto"
+                  value={a.modelo}
+                  onChange={e => updateAuto(i, 'modelo', e.target.value)}
                 />
                 <select
                   className="input w-[90px]"
-                  value={v.tamaño}
-                  onChange={e => updateVehiculo(i, 'tamaño', e.target.value)}
+                  value={a.tamaño}
+                  onChange={e => updateAuto(i, 'tamaño', e.target.value)}
                 >
                   {TAMAÑOS_AUTO.map(t => <option key={t}>{t}</option>)}
                 </select>
                 <button
-                  onClick={() => removeVehiculo(i)}
+                  onClick={() => removeAuto(i)}
                   className="mt-1.5 text-[var(--text-muted)] hover:text-[var(--danger-text)] cursor-pointer shrink-0"
                 >
                   <X size={16} />

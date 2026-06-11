@@ -47,22 +47,11 @@ create index if not exists turnos_fecha_idx on turnos(fecha);
 create index if not exists turnos_cliente_idx on turnos(cliente_id);
 create index if not exists turnos_estado_idx on turnos(estado);
 
--- Vehículos por cliente
-create table if not exists vehiculos (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz default now(),
-  cliente_id uuid not null references clientes(id) on delete cascade,
-  nombre text not null,
-  tamaño tamaño_auto not null default 'Mediano'
-);
-
-create index if not exists vehiculos_cliente_idx on vehiculos(cliente_id);
-
 -- RLS: deshabilitar para MVP (acceso solo con service role)
 alter table clientes disable row level security;
 alter table servicios disable row level security;
 alter table turnos disable row level security;
-alter table vehiculos disable row level security;
+alter table autos disable row level security;
 
 -- ============================================
 -- Seed: Servicios iniciales
