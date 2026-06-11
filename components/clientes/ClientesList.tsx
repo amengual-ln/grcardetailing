@@ -110,7 +110,7 @@ export function ClientesList({ initialClientes, turnos }: Props) {
                 {c.ultimoTurno && (
                   <div className="text-right shrink-0 hidden lg:block min-w-[80px]">
                     <div className="text-[11px] text-[var(--text-muted)]">Último turno</div>
-                    <div className="text-xs text-[var(--text-muted)] truncate">{c.ultimoTurno.servicios?.nombre}</div>
+                    <div className="text-xs text-[var(--text-muted)] truncate">{c.ultimoTurno.servicios?.map(s => s.nombre).join(', ')}</div>
                   </div>
                 )}
                 <button

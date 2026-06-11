@@ -68,7 +68,6 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['autos']['Row'], 'id' | 'created_at'>
         Update: Partial<Database['public']['Tables']['autos']['Insert']>
       }
-      }
     }
   }
 }

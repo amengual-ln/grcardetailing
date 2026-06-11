@@ -148,16 +148,7 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
           </button>
         </div>
 
-<<<<<<< HEAD
-        <div className="flex flex-col gap-1">
-          <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Cliente</label>
-          <input className="input" placeholder="Nombre y apellido" value={form.clienteNombre} onChange={set('clienteNombre')} />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Teléfono</label>
-          <input className="input" type="tel" placeholder="+54 9 11..." value={form.clienteTel} onChange={set('clienteTel')} />
-=======
-        {error && (
+{error && (
           <div className="bg-[var(--danger-bg)] border border-[var(--red)] text-[var(--red)] text-xs px-3 py-2 rounded-lg">
             {error}
           </div>
@@ -179,7 +170,6 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
             <UserPlus size={12} className="inline mr-1" />
             Nuevo cliente
           </button>
->>>>>>> origin/main
         </div>
 
         {esClienteNuevo ? (

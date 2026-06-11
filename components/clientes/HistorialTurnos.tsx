@@ -47,7 +47,7 @@ export function HistorialTurnos({ cliente, turnos, onClose }: Props) {
                   </div>
                   <div className="flex items-center gap-2">
                     <Wrench size={12} className="text-[var(--text-muted)] shrink-0" />
-                    <span className="text-xs text-[var(--text-muted)] truncate">{t.servicios?.nombre}</span>
+                    <span className="text-xs text-[var(--text-muted)] truncate">{t.servicios?.map(s => s.nombre).join(', ')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Car size={12} className="text-[var(--text-muted)] shrink-0" />
