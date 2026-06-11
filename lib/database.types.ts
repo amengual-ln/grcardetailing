@@ -76,7 +76,10 @@ export type Cliente = Database['public']['Tables']['clientes']['Row']
 export type Servicio = Database['public']['Tables']['servicios']['Row']
 export type Turno = Database['public']['Tables']['turnos']['Row']
 export type Auto = Database['public']['Tables']['autos']['Row']
-export type TurnoConRelaciones = Turno& {
+export type TurnoConRelaciones = Turno & {
   clientes: Cliente
   servicios: Servicio[]
+}
+export type ClienteConAutos = Cliente & {
+  autos: Auto[]
 }

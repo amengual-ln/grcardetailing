@@ -23,6 +23,7 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
   const [autosCliente, setAutosCliente] = useState<Auto[]>([])
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({
+
     clienteExistenteId: '',
     clienteNombre: '', clienteTel: '', clienteEmail: '',
     autoId: '',
@@ -147,7 +148,7 @@ export function TurnoModal({ servicios, clientes, defaultFecha, onClose, onSaved
           </button>
         </div>
 
-        {error && (
+{error && (
           <div className="bg-[var(--danger-bg)] border border-[var(--red)] text-[var(--red)] text-xs px-3 py-2 rounded-lg">
             {error}
           </div>

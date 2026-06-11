@@ -44,7 +44,7 @@ export function TurnoDetalle({ turno, onClose, onUpdated }: Props) {
       <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] w-full max-w-sm shadow-xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 p-5 border-b border-[var(--border)]">
-          <Avatar nombre={turno.clientes?.nombre || '?'} size="md" />
+          <Avatar size="md" />
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-sm truncate">{turno.clientes?.nombre}</div>
             <div className="text-xs text-[var(--text-muted)]">{turno.clientes?.telefono}</div>

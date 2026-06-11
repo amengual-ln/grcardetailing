@@ -58,6 +58,7 @@ create index if not exists turnos_estado_idx on turnos(estado);
 alter table clientes disable row level security;
 alter table servicios disable row level security;
 alter table turnos disable row level security;
+alter table autos disable row level security;
 
 -- ============================================
 -- Seed: Servicios iniciales
