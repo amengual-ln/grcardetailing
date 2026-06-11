@@ -124,8 +124,12 @@ export function AgendaView({ servicios, clientes }: AgendaViewProps) {
                     </button>
                   ) : (
                     dayTurnos.map(turno => {
-                      const dur = turno.servicios?.duracion_minutos || 60
+                      const servicios = turno.servicios || []
+                      const dur = servicios.reduce((acc, s) => acc + s.duracion_minutos, 0) || 60
                       const horaFin = calcularHoraFin(turno.hora, dur)
+                      const serviciosLabel = servicios.length > 1
+                        ? `${servicios[0]?.nombre} +${servicios.length - 1}`
+                        : servicios[0]?.nombre || ''
                       return (
                         <button
                           key={turno.id}
@@ -142,7 +146,7 @@ export function AgendaView({ servicios, clientes }: AgendaViewProps) {
                           <span className="text-xs font-mono text-[var(--text-muted)] min-w-[40px]">{turno.hora}</span>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-medium truncate">{turno.clientes?.nombre}</div>
-                            <div className="text-xs text-[var(--text-muted)] truncate">{turno.servicios?.nombre} · {turno.auto_modelo}</div>
+                            <div className="text-xs text-[var(--text-muted)] truncate">{serviciosLabel} · {turno.auto_modelo}</div>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
                             <span className="text-[11px] text-[var(--text-muted)] bg-[var(--muted-bg)] px-1.5 py-0.5 rounded-full hidden sm:inline">{formatDuracion(dur)}</span>

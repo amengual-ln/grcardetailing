@@ -17,7 +17,11 @@ interface Props {
 
 export function TurnoDetalle({ turno, onClose, onUpdated }: Props) {
   const [loading, setLoading] = useState(false)
-  const dur = turno.servicios?.duracion_minutos || 60
+
+  const servicios = turno.servicios || []
+  const duracionTotal = servicios.reduce((acc, s) => acc + s.duracion_minutos, 0)
+  const precioTotal = servicios.reduce((acc, s) => acc + Number(s.precio_base), 0)
+  const dur = duracionTotal || 60
   const horaFin = calcularHoraFin(turno.hora, dur)
 
   async function cambiarEstado(estado: EstadoTurno) {
@@ -55,7 +59,6 @@ export function TurnoDetalle({ turno, onClose, onUpdated }: Props) {
           {[
             { icon: Calendar, label: 'Fecha',    val: formatFecha(turno.fecha) },
             { icon: Clock,    label: 'Horario',  val: `${turno.hora} — ${horaFin} (${formatDuracion(dur)})` },
-            { icon: Wrench,   label: 'Servicio', val: turno.servicios?.nombre || '' },
             { icon: Car,      label: 'Auto',     val: `${turno.auto_modelo} · ${turno.auto_tamaño}` },
           ].map(({ icon: Icon, label, val }) => (
             <div key={label} className="flex items-center gap-3 text-sm">
@@ -64,6 +67,28 @@ export function TurnoDetalle({ turno, onClose, onUpdated }: Props) {
               <span className="font-medium">{val}</span>
             </div>
           ))}
+
+          <div className="flex items-start gap-3 text-sm">
+            <Wrench size={15} className="text-[var(--text-muted)] shrink-0 mt-0.5" />
+            <span className="text-[var(--text-muted)] min-w-[68px] text-xs">Servicios</span>
+            <div className="flex flex-col gap-0.5">
+              {servicios.map(s => (
+                <div key={s.id} className="flex items-center gap-2">
+                  <span className="text-xs">{s.nombre}</span>
+                  <span className="text-xs text-[var(--text-muted)]">· {formatDuracion(s.duracion_minutos)}</span>
+                  <span className="text-xs text-[var(--text-muted)]">· ${Number(s.precio_base).toLocaleString()}</span>
+                </div>
+              ))}
+              {servicios.length > 1 && (
+                <div className="flex items-center gap-2 mt-1 pt-1 border-t border-[var(--border)]">
+                  <span className="text-xs font-medium">Total:</span>
+                  <span className="text-xs font-medium">{formatDuracion(duracionTotal)}</span>
+                  <span className="text-xs font-medium text-[var(--text)]">${precioTotal.toLocaleString()}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center gap-3 text-sm">
             <Flag size={15} className="text-[var(--text-muted)] shrink-0" />
             <span className="text-[var(--text-muted)] min-w-[68px] text-xs">Estado</span>

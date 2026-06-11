@@ -36,7 +36,6 @@ export interface Database {
           id: string
           created_at: string
           cliente_id: string
-          servicio_id: string
           fecha: string
           hora: string
           estado: EstadoTurno
@@ -48,30 +47,40 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['turnos']['Row'], 'id' | 'created_at'>
         Update: Partial<Database['public']['Tables']['turnos']['Insert']>
       }
-      vehiculos: {
+      turno_servicios: {
         Row: {
           id: string
-          created_at: string
-          cliente_id: string
-          nombre: string
-          tamaño: TamañoAuto
+          turno_id: string
+          servicio_id: string
         }
-        Insert: Omit<Database['public']['Tables']['vehiculos']['Row'], 'id' | 'created_at'>
-        Update: Partial<Database['public']['Tables']['vehiculos']['Insert']>
+        Insert: Omit<Database['public']['Tables']['turno_servicios']['Row'], 'id'>
+        Update: Partial<Database['public']['Tables']['turno_servicios']['Insert']>
+      }
+      autos: {
+        Row: {
+          id: string
+          cliente_id: string
+          modelo: string
+          tamaño: TamañoAuto
+          patente: string | null
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['autos']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['autos']['Insert']>
+      }
       }
     }
   }
 }
 
-// Tipos de conveniencia para usar en la app
 export type Cliente = Database['public']['Tables']['clientes']['Row']
 export type Servicio = Database['public']['Tables']['servicios']['Row']
 export type Turno = Database['public']['Tables']['turnos']['Row']
-export type Vehiculo = Database['public']['Tables']['vehiculos']['Row']
+export type Auto = Database['public']['Tables']['autos']['Row']
 export type TurnoConRelaciones = Turno & {
   clientes: Cliente
-  servicios: Servicio
+  servicios: Servicio[]
 }
-export type ClienteConVehiculos = Cliente & {
-  vehiculos: Vehiculo[]
+export type ClienteConAutos = Cliente & {
+  autos: Auto[]
 }

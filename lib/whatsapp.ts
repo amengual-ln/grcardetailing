@@ -8,13 +8,12 @@ interface TurnoData {
   clienteTelefono: string
   fecha: string
   hora: string
-  servicio: string
+  servicios: string[]
 }
 
 export async function enviarRecordatorio(turno: TurnoData): Promise<boolean> {
   const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM } = process.env
 
-  // Si no están configuradas las keys, solo loggear
   if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_WHATSAPP_FROM) {
     console.log('[WhatsApp] Variables no configuradas. Recordatorio simulado para:', turno.clienteNombre)
     return false
@@ -49,16 +48,18 @@ export async function enviarRecordatorio(turno: TurnoData): Promise<boolean> {
 }
 
 function buildMensajeRecordatorio(turno: TurnoData): string {
+  const serviciosList = turno.servicios.map(s => `🔧 *${s}*`).join('\n')
   return `Hola ${turno.clienteNombre.split(' ')[0]}! 👋
 
 Te recuerdo que mañana tenés turno en *GR Car Detailing*:
 
 🗓 *${turno.fecha}* a las *${turno.hora}*
-🔧 *${turno.servicio}*
+
+${serviciosList}
 
 ¿Podés confirmar asistencia? Respondé SI o NO.
 
 Si necesitás reprogramar, avisame con anticipación.
 
-¡Gracias! — Gonzalo / GR Car Detailing 🚗`
+¡Gracias! GR Car Detailing 🚗`
 }

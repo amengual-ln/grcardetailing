@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
   const { data: turnos, error } = await supabase
     .from('turnos')
-    .select('*, clientes(*), servicios(*)')
+    .select('*, clientes(*), turno_servicios(servicio_id)')
     .eq('fecha', mañana)
     .eq('estado', 'confirmado')
     .eq('recordatorio_enviado', false)
@@ -26,18 +26,33 @@ export async function GET(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!turnos?.length) return NextResponse.json({ message: 'Sin turnos mañana', enviados: 0 })
 
+  const turnoIds = turnos.map(t => t.id)
+  const { data: servicioRows } = await supabase
+    .from('turno_servicios')
+    .select('turno_id, servicios(*)')
+    .in('turno_id', turnoIds)
+
+  const serviciosMap: Record<string, any[]> = {}
+  for (const row of servicioRows || []) {
+    if (!serviciosMap[row.turno_id]) serviciosMap[row.turno_id] = []
+    if (row.servicios) serviciosMap[row.turno_id].push(row.servicios)
+  }
+
   let enviados = 0
   for (const turno of turnos as any[]) {
     const cliente = turno.clientes
-    const servicio = turno.servicios
+    const servicios = serviciosMap[turno.id] || []
     if (!cliente?.telefono) continue
+
+    const serviciosNombres = servicios.map((s: any) => s.nombre)
+    if (serviciosNombres.length === 0) continue
 
     const ok = await enviarRecordatorio({
       clienteNombre: cliente.nombre,
       clienteTelefono: cliente.telefono,
       fecha: mañana,
       hora: turno.hora,
-      servicio: servicio?.nombre || 'Servicio',
+      servicios: serviciosNombres,
     })
 
     if (ok) {
